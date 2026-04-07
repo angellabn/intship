@@ -22,6 +22,8 @@ exports.createCategory = (req, res) => {
 
 };
 
+
+
 exports.getCategories = (req, res) => {
 
   const sql = `
@@ -41,6 +43,8 @@ exports.getCategories = (req, res) => {
   });
 
 };
+
+
 
 exports.updateCategory = (req, res) => {
 
@@ -65,6 +69,8 @@ exports.updateCategory = (req, res) => {
   });
 
 };
+
+
 
 exports.deleteCategory = (req, res) => {
 

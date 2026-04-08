@@ -1,0 +1,10 @@
+{
+  "name": "product-management-module",
+  "version": "1.0.0",
+  "description": "Full-stack Product Management Module with Node.js + MySQL",
+  "scripts": {
+    "start": "cd backend && node server.js",
+    "dev": "cd backend && npm run dev",
+    "install-deps": "cd backend && npm install"
+  }
+}

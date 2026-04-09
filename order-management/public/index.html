@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Management Module</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════ LOGIN PAGE ═══════════════════════════════ -->
+<div id="loginPage" class="page active">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="brand-icon">📦</div>
+      <h1>Order Management</h1>
+      <p>Module Assignment — Web Application Development</p>
+    </div>
+    <div class="auth-card">
+      <h2>Sign In</h2>
+      <div id="loginError" class="alert alert-error hidden"></div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="loginEmail" placeholder="admin@demo.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" />
+      </div>
+      <button class="btn btn-primary btn-full" onclick="login()">Sign In</button>
+      <p class="auth-switch">No account? <a href="#" onclick="showPage('registerPage')">Register here</a></p>
+      <div class="demo-creds">
+        <p><strong>Demo Admin:</strong> admin@demo.com / Admin@123</p>
+        <p><strong>Demo Customer:</strong> customer@demo.com / Customer@123</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════ REGISTER PAGE ════════════════════════════ -->
+<div id="registerPage" class="page">
+  <div class="auth-wrap">
+    <div class="auth-brand">
+      <div class="brand-icon">📦</div>
+      <h1>Order Management</h1>
+      <p>Create your account</p>
+    </div>
+    <div class="auth-card">
+      <h2>Register</h2>
+      <div id="registerError" class="alert alert-error hidden"></div>
+      <div id="registerSuccess" class="alert alert-success hidden"></div>
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="regName" placeholder="Your Name" />
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="regEmail" placeholder="you@example.com" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Min 6 characters" />
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select id="regRole">
+          <option value="customer">Customer</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <button class="btn btn-primary btn-full" onclick="register()">Create Account</button>
+      <p class="auth-switch">Already have an account? <a href="#" onclick="showPage('loginPage')">Sign in</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- ═════════════════════════════════ MAIN APP ══════════════════════════════ -->
+<div id="appPage" class="page">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon-sm">📦</span>
+      <span>OrderMgmt</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#" class="nav-item active" onclick="switchTab('dashboard')" id="navDashboard">
+        <span class="nav-icon">📋</span> Dashboard
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('placeOrder')" id="navPlaceOrder">
+        <span class="nav-icon">🛒</span> Place Order
+      </a>
+      <a href="#" class="nav-item" onclick="switchTab('myOrders')" id="navMyOrders" style="display:none">
+        <span class="nav-icon">📦</span> My Orders
+      </a>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-pill">
+        <span class="user-avatar" id="sidebarAvatar">U</span>
+        <div>
+          <div class="user-name" id="sidebarName">User</div>
+          <div class="user-role" id="sidebarRole">customer</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="logout()">Logout</button>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ── DASHBOARD TAB ── -->
+    <section id="tabDashboard" class="tab-section active">
+      <div class="page-header">
+        <h2>Order Dashboard</h2>
+        <p>Monitor and manage all customer orders</p>
+      </div>
+
+      <!-- Filters -->
+      <div class="filter-bar">
+        <input type="text" id="searchInput" placeholder="Search by name, address or Order ID…" oninput="debounceSearch()" />
+        <select id="statusFilter" onchange="loadOrders()">
+          <option value="">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Shipped">Shipped</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+        <button class="btn btn-secondary" onclick="loadOrders()">🔄 Refresh</button>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row" id="statsRow"></div>
+
+      <!-- Table -->
+      <div class="table-wrap">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Shipping Address</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr><td colspan="7" class="loading-cell">Loading orders…</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination" id="pagination"></div>
+    </section>
+
+    <!-- ── PLACE ORDER TAB ── -->
+    <section id="tabPlaceOrder" class="tab-section">
+      <div class="page-header">
+        <h2>Place an Order</h2>
+        <p>Select products and complete checkout</p>
+      </div>
+
+      <div class="order-form-grid">
+        <!-- Products -->
+        <div class="card">
+          <h3>Select Products</h3>
+          <div id="productList" class="product-list">Loading products…</div>
+        </div>
+
+        <!-- Cart & Checkout -->
+        <div class="card">
+          <h3>Cart & Checkout</h3>
+          <div id="cartItems" class="cart-empty">Your cart is empty</div>
+          <div id="cartSummary" class="cart-summary hidden">
+            <div class="summary-row"><span>Subtotal</span><span id="cartSubtotal">₹0</span></div>
+            <div class="summary-row"><span>GST (18%)</span><span id="cartGst">₹0</span></div>
+            <div class="summary-row total"><span>Total</span><span id="cartTotal">₹0</span></div>
+          </div>
+          <div class="form-group" style="margin-top:16px">
+            <label>Shipping Address</label>
+            <textarea id="shippingAddress" rows="3" placeholder="Enter full delivery address…"></textarea>
+          </div>
+          <div id="orderAlert" class="alert hidden"></div>
+          <button class="btn btn-primary btn-full" onclick="placeOrder()" id="placeOrderBtn" disabled>Place Order</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── MY ORDERS TAB (customers) ── -->
+    <section id="tabMyOrders" class="tab-section">
+      <div class="page-header">
+        <h2>My Orders</h2>
+        <p>View and manage your orders</p>
+      </div>
+      <div class="table-wrap">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Address</th>
+              <th>Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="myOrdersBody">
+            <tr><td colspan="6" class="loading-cell">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ═══════════════════════════════ ORDER MODAL ══════════════════════════════ -->
+<div id="orderModal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <h3>Order Details</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody">Loading…</div>
+    <div class="modal-footer" id="modalFooter"></div>
+  </div>
+</div>
+
+<script src="/js/app.js"></script>
+</body>
+</html>

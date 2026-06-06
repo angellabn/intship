@@ -2,8 +2,6 @@
 -- Cart Management Module - MySQL Schema
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS cart_db;
-USE cart_db;
 
 -- Products table
 CREATE TABLE IF NOT EXISTS products (

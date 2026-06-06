@@ -69,10 +69,11 @@ public class CartService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Cart item not found with ID: " + cartId));
 
-        Product product = productRepository.findById(cart.getProductId())
-                .orElseThrow(() -> new ResourceNotFoundException(
-                        "Product not found with ID: " + cart.getProductId()));
+        Long productId = cart.getProductId();
 
+Product product = productRepository.findById(productId)
+        .orElseThrow(() -> new ResourceNotFoundException(
+                "Product not found with ID: " + productId));
         if (product.getStock() < request.getQuantity()) {
             throw new InsufficientStockException(
                     "Insufficient stock. Available: " + product.getStock());
